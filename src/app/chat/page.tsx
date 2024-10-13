@@ -13,8 +13,7 @@ const Chat = () => {
     const router = useRouter();
 
     useEffect(() => {
-        const user = typeof window !== 'undefined' ? localStorage.getItem('user_auth') : null;
-        const storedData = user ? JSON.parse(user) : null;
+        const storedData = localStorage?.getItem("user_auth");
 
         // Verifica se os dados estão disponíveis e tenta analisar
         if (storedData) {
