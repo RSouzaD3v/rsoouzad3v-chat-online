@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,40 +8,35 @@ datasource db {
 }
 
 model User {
-  id          Int          @id @default(autoincrement()) // ID auto-incrementado
-  username    String       @unique                      // Nome de usuário único
-  email       String       @unique                      // Email único
-  password    String                                    // Hash da senha
-  status      String       @default("offline")          // Status padrão (offline)
-  createdAt   DateTime     @default(now())              // Data de criação do usuário
-
-  // Relacionamento: canais que o usuário criou
-  createdChannels Channel[] @relation("UserCreatedChannels") // Relacionamento com os canais criados
-
-  // Relacionamento: canais em que o usuário participa
-  channels    UserChannel[]                             // Relacionamento com canais (usuário participando de canais)
+  id        Int        @id @default(autoincrement())
+  username  String     @unique
+  email     String     @unique
+  password  String
+  messages  Message[]  @relation("UserMessages")
+  createdAt DateTime   @default(now())
 }
 
-model Channel {
-  id          Int          @id @default(autoincrement()) // ID auto-incrementado
-  name        String       @unique                      // Nome do canal
-  createdBy   Int                                        // Relacionamento com o usuário criador
-  creator     User         @relation("UserCreatedChannels", fields: [createdBy], references: [id]) // Criador do canal
-  createdAt   DateTime     @default(now())               // Data de criação do canal
-
-  // Relacionamento com os usuários que participam do canal
-  users       UserChannel[]                             // Relacionamento com os usuários participantes
+model ChatRoom {
+  id        Int        @id @default(autoincrement())
+  name      String
+  messages  Message[]  @relation("RoomMessages")
+  createdAt DateTime   @default(now())
 }
 
-model UserChannel {
-  id          Int      @id @default(autoincrement())  // ID auto-incrementado
-  userId      Int                                      // Referência ao usuário
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)  // Relacionamento com usuário
-  channelId   Int                                      // Referência ao canal
-  channel     Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)  // Relacionamento com canal
-  role        String                                   // Papel do usuário no canal (admin, membro, etc.)
-  joinedAt    DateTime @default(now())                 // Data de entrada no canal
-
-  @@unique([userId, channelId])                        // Garante que o usuário não possa participar do mesmo canal mais de uma vez
+model Contacts {
+  id          Int     @id @default(autoincrement())
+  ownerId     Int
+  name        String
+  status      String
+  userOwner   String
 }
 
+model Message {
+  id        Int        @id @default(autoincrement())
+  content   String
+  senderId  Int
+  sender    User       @relation("UserMessages", fields: [senderId], references: [id])
+  roomId    Int
+  room      ChatRoom   @relation("RoomMessages", fields: [roomId], references: [id])
+  createdAt DateTime   @default(now())
+}
