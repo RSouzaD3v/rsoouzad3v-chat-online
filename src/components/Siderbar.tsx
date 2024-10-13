@@ -35,7 +35,7 @@ const Sidebar = () => {
         };
 
         loadingContacts();
-    }, []);
+    }, [parserUser.data.id]);
 
     return (
         <div className="fixed w-[500px] p-5 h-screen bg-black text-white overflow-x-hidden overflow-y-auto">
